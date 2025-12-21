@@ -8,6 +8,9 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "MaimWebBackend"
     API_V1_STR: str = "/api/v1"
     
+    # MaimConfig Service
+    MAIMCONFIG_API_URL: str = "http://localhost:8000/api/v2"
+    
     # 秘钥配置
     SECRET_KEY: str = "CHANGE_THIS_TO_A_SECURE_SECRET_KEY_IN_PRODUCTION"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8  # 8 days

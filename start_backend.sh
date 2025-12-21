@@ -4,7 +4,8 @@
 # 设置数据库连接 URL
 # 注意: MaimWebBackend 使用异步 SQLAlchemy，需要 sqlite+aiosqlite 驱动
 # DATABASE_URL is now loaded from .env
-# export DATABASE_URL="sqlite+aiosqlite:////home/tcmofashi/proj/maim_db/data/MaiBot.db"
+# DATABASE_URL is now loaded from .env
+export DATABASE_URL="sqlite+aiosqlite:////home/tcmofashi/proj/MaimWebBackend/maim_web.db"
 
 echo "🚀 Starting MaimWebBackend..."
 echo "📂 DATABASE_URL: $DATABASE_URL"
