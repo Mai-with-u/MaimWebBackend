@@ -6,7 +6,7 @@ print("Starting MaimWebBackend...", flush=True)
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
-from src.api.routes import auth, agents
+from src.api.routes import auth, agents, plugins
 from src.core.settings import settings
 from maim_db.maimconfig_models.models import create_tables
 
@@ -27,6 +27,7 @@ if settings.BACKEND_CORS_ORIGINS:
 
 app.include_router(auth.router, prefix=f"{settings.API_V1_STR}/auth", tags=["auth"])
 app.include_router(agents.router, prefix=f"{settings.API_V1_STR}/agents", tags=["agents"])
+app.include_router(plugins.router, prefix=f"{settings.API_V1_STR}/plugins", tags=["plugins"])
 
 
 @app.on_event("startup")

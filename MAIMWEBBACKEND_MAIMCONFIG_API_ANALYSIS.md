@@ -54,13 +54,13 @@ async def create_agent_api_key(...):
 **错误处理位置**: `MaimWebBackend/src/api/routes/agents.py:152-175`  
 **超时配置位置**: `MaimWebBackend/src/api/routes/agents.py:161`
 
-| 特性 | MaimWebBackend → MaimConfig | 说明 |
-|------|---------------------------|------|
-| **通信协议** | HTTP REST API | 使用 httpx 异步客户端 |
-| **目标端口** | 8000 | MaimConfig 服务端口 |
-| **认证方式** | 无需认证 | 内部服务间调用 |
-| **错误处理** | 状态码转发 + 业务逻辑处理 | 详细的错误映射 |
-| **超时设置** | 10秒 | 防止长时间阻塞 |
+| 特性         | MaimWebBackend → MaimConfig | 说明                  |
+| ------------ | --------------------------- | --------------------- |
+| **通信协议** | HTTP REST API               | 使用 httpx 异步客户端 |
+| **目标端口** | 8000                        | MaimConfig 服务端口   |
+| **认证方式** | 无需认证                    | 内部服务间调用        |
+| **错误处理** | 状态码转发 + 业务逻辑处理   | 详细的错误映射        |
+| **超时设置** | 10秒                        | 防止长时间阻塞        |
 
 ### 3. 具体API调用映射
 
@@ -111,20 +111,22 @@ maple留言:网页后端与maimConfig中的数据交换是保证安全可靠的�
 #### MaimWebBackend API设计
 
 **认证路由位置**: `MaimWebBackend/src/api/routes/auth.py`  
-**Agent路由位置**: `MaimWebBackend/src/api/routes/agents.py`  
+**Agent路由位置**: `MaimWebBackend/src/api/routes/agents.py`
+**插件路由位置**: `MaimWebBackend/src/api/routes/plugins.py`
 **主应用注册位置**: `MaimWebBackend/src/main.py:20-30`
 
-| 端点 | 方法 | 认证 | 功能 | 文件位置 |
-|------|------|------|------|----------|
-| `/api/v1/auth/register` | POST | 无 | 用户注册 | `auth.py:register()` |
-| `/api/v1/auth/login` | POST | 无 | 用户登录 | `auth.py:login()` |
-| `/api/v1/agents/` | GET | JWT | 获取Agent列表 | `agents.py:read_agents()` |
-| `/api/v1/agents/` | POST | JWT | 创建Agent | `agents.py:create_agent()` |
-| `/api/v1/agents/{id}` | GET | JWT | 获取Agent详情 | `agents.py:read_agent()` |
-| `/api/v1/agents/{id}` | PUT | JWT | 更新Agent | `agents.py:update_agent()` |
-| `/api/v1/agents/{id}/api_keys` | POST | JWT | 创建API密钥 | `agents.py:create_agent_api_key()` |
-| `/api/v1/agents/{id}/api_keys` | GET | JWT | 获取API密钥列表 | `agents.py:read_agent_api_keys()` |
-| `/api/v1/agents/{id}/api_keys/{key_id}` | DELETE | JWT | 删除API密钥 | `agents.py:delete_agent_api_key()` |
+| 端点                                    | 方法   | 认证 | 功能            | 文件位置                             |
+| --------------------------------------- | ------ | ---- | --------------- | ------------------------------------ |
+| `/api/v1/auth/register`                 | POST   | 无   | 用户注册        | `auth.py:register()`                 |
+| `/api/v1/auth/login`                    | POST   | 无   | 用户登录        | `auth.py:login()`                    |
+| `/api/v1/agents/`                       | GET    | JWT  | 获取Agent列表   | `agents.py:read_agents()`            |
+| `/api/v1/agents/`                       | POST   | JWT  | 创建Agent       | `agents.py:create_agent()`           |
+| `/api/v1/agents/{id}`                   | GET    | JWT  | 获取Agent详情   | `agents.py:read_agent()`             |
+| `/api/v1/agents/{id}`                   | PUT    | JWT  | 更新Agent       | `agents.py:update_agent()`           |
+| `/api/v1/agents/{id}/api_keys`          | POST   | JWT  | 创建API密钥     | `agents.py:create_agent_api_key()`   |
+| `/api/v1/agents/{id}/api_keys`          | GET    | JWT  | 获取API密钥列表 | `agents.py:read_agent_api_keys()`    |
+| `/api/v1/agents/{id}/api_keys/{key_id}` | DELETE | JWT  | 删除API密钥     | `agents.py:delete_agent_api_key()`   |
+| `/api/v1/plugins/settings`              | POST   | JWT  | 配置插件 (代理) | `plugins.py:upsert_plugin_setting()` |
 
 #### MaimConfig API设计
 
@@ -134,19 +136,19 @@ maple留言:网页后端与maimConfig中的数据交换是保证安全可靠的�
 **API密钥路由位置**: `MaimConfig/src/api/routes/api_key_api.py`  
 **认证路由位置**: `MaimConfig/src/api/routes/auth_api.py`
 
-| 端点 | 方法 | 认证 | 功能 | 文件位置 |
-|------|------|------|------|----------|
-| `/api/v2/tenants` | POST | 无 | 创建租户 | `tenant_api.py:create_tenant()` |
-| `/api/v2/agents` | POST | 无 | 创建Agent | `agent_api.py:create_agent()` |
-| `/api/v2/agents/{id}` | GET | 无 | 获取Agent详情 | `agent_api.py:get_agent()` |
-| `/api/v2/agents/{id}` | PUT | 无 | 更新Agent | `agent_api.py:update_agent()` |
-| `/api/v2/agents/{id}` | DELETE | 无 | 删除Agent | `agent_api.py:delete_agent()` |
-| `/api/v2/api-keys` | POST | 无 | 创建API密钥 | `api_key_api.py:create_api_key()` |
-| `/api/v2/api-keys` | GET | 无 | 获取API密钥列表 | `api_key_api.py:list_api_keys()` |
-| `/api/v2/api-keys/{id}` | GET | 无 | 获取API密钥详情 | `api_key_api.py:get_api_key()` |
-| `/api/v2/api-keys/{id}` | PUT | 无 | 更新API密钥 | `api_key_api.py:update_api_key()` |
-| `/api/v2/auth/parse-api-key` | POST | 无 | 解析API密钥 | `auth_api.py:parse_api_key()` |
-| `/api/v2/auth/validate-api-key` | POST | 无 | 验证API密钥 | `auth_api.py:validate_api_key()` |
+| 端点                            | 方法   | 认证 | 功能            | 文件位置                          |
+| ------------------------------- | ------ | ---- | --------------- | --------------------------------- |
+| `/api/v2/tenants`               | POST   | 无   | 创建租户        | `tenant_api.py:create_tenant()`   |
+| `/api/v2/agents`                | POST   | 无   | 创建Agent       | `agent_api.py:create_agent()`     |
+| `/api/v2/agents/{id}`           | GET    | 无   | 获取Agent详情   | `agent_api.py:get_agent()`        |
+| `/api/v2/agents/{id}`           | PUT    | 无   | 更新Agent       | `agent_api.py:update_agent()`     |
+| `/api/v2/agents/{id}`           | DELETE | 无   | 删除Agent       | `agent_api.py:delete_agent()`     |
+| `/api/v2/api-keys`              | POST   | 无   | 创建API密钥     | `api_key_api.py:create_api_key()` |
+| `/api/v2/api-keys`              | GET    | 无   | 获取API密钥列表 | `api_key_api.py:list_api_keys()`  |
+| `/api/v2/api-keys/{id}`         | GET    | 无   | 获取API密钥详情 | `api_key_api.py:get_api_key()`    |
+| `/api/v2/api-keys/{id}`         | PUT    | 无   | 更新API密钥     | `api_key_api.py:update_api_key()` |
+| `/api/v2/auth/parse-api-key`    | POST   | 无   | 解析API密钥     | `auth_api.py:parse_api_key()`     |
+| `/api/v2/auth/validate-api-key` | POST   | 无   | 验证API密钥     | `auth_api.py:validate_api_key()`  |
 
 ### 3. 数据模型对比
 
@@ -205,12 +207,12 @@ from maim_db.maimconfig_models.models import create_tables
 
 ### 2. 数据库模型使用
 
-| 模型 | MaimWebBackend | MaimConfig | 说明 |
-|------|----------------|------------|------|
-| User | ✓ | ✗ | 用户模型（仅WebBackend使用） |
-| Tenant | ✓ | ✓ | 租户模型（共享） |
-| Agent | ✓ | ✓ | Agent模型（共享） |
-| ApiKey | ✓ | ✓ | API密钥模型（共享） |
+| 模型   | MaimWebBackend | MaimConfig | 说明                         |
+| ------ | -------------- | ---------- | ---------------------------- |
+| User   | ✓              | ✗          | 用户模型（仅WebBackend使用） |
+| Tenant | ✓              | ✓          | 租户模型（共享）             |
+| Agent  | ✓              | ✓          | Agent模型（共享）            |
+| ApiKey | ✓              | ✓          | API密钥模型（共享）          |
 
 ## 错误处理机制
 
@@ -334,12 +336,12 @@ const apiKeyResponse = await fetch(`http://localhost:8880/api/v1/agents/${agentI
 
 ### 1. 服务端口分配
 
-| 服务 | 端口 | 协议 | 用途 |
-|------|------|------|------|
-| MaimWebBackend | 8880 | HTTP | 前端API服务 |
-| MaimConfig | 8000 | HTTP | 内部配置服务 |
-| MySQL | 3306 | TCP | 数据库服务 |
-| Redis | 6379 | TCP | 缓存服务 |
+| 服务           | 端口 | 协议 | 用途         |
+| -------------- | ---- | ---- | ------------ |
+| MaimWebBackend | 8880 | HTTP | 前端API服务  |
+| MaimConfig     | 8000 | HTTP | 内部配置服务 |
+| MySQL          | 3306 | TCP  | 数据库服务   |
+| Redis          | 6379 | TCP  | 缓存服务     |
 
 ### 2. Docker部署配置
 

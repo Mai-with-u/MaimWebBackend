@@ -20,4 +20,4 @@ if [ -z "$CONDA_DEFAULT_ENV" ] || [ "$CONDA_DEFAULT_ENV" != "maibot" ]; then
 fi
 
 # 启动服务
-python -m uvicorn src.main:app --host 0.0.0.0 --port 8880 --reload
+python -m uvicorn src.main:app --host 0.0.0.0 --port 8880 --reload --reload-dir src

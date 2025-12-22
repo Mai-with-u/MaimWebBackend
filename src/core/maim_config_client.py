@@ -74,4 +74,25 @@ class MaimConfigClient:
         # DELETE /api-keys/{api_key_id}
         return await self._request("DELETE", f"/api-keys/{api_key_id}")
 
+    async def upsert_plugin_setting(self, tenant_id: str, agent_id: str, setting_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Upsert plugin setting (Using v1 API)"""
+        # POST /api/v1/plugins/settings
+        # Hack to switch version since base_url defaults to v2
+        base_v1 = self.base_url.replace("/v2", "/v1")
+        url = f"{base_v1}/plugins/settings"
+        
+        async with httpx.AsyncClient() as client:
+            try:
+                response = await client.post(url, params={"tenant_id": tenant_id, "agent_id": agent_id}, json=setting_data)
+                response.raise_for_status()
+                return response.json()
+            except httpx.HTTPStatusError as e:
+                try:
+                    error_data = e.response.json()
+                    raise Exception(f"MaimConfig Error: {error_data.get('message', str(e))}")
+                except Exception:
+                    raise Exception(f"MaimConfig Error: {str(e)}")
+            except Exception as e:
+                raise Exception(f"MaimConfig Connection Error: {str(e)}")
+
 client = MaimConfigClient()
