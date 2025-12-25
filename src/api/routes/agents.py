@@ -110,8 +110,11 @@ async def create_agent(
         # agent_api.py create_agent returns data={agent_id, tenant_id, name...}
         return resp["data"]
         
+    except HTTPException:
+        raise
     except Exception as e:
-         raise HTTPException(status_code=503, detail=str(e))
+         print(f"ERROR create_agent: {e}")
+         raise HTTPException(status_code=503, detail=f"Proxy Error: {str(e)}")
 
 
 @router.get("/{agent_id}", response_model=AgentOut)
@@ -143,7 +146,8 @@ async def read_agent(
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=503, detail=str(e))
+        print(f"ERROR read_agent: {e}")
+        raise HTTPException(status_code=503, detail=f"Proxy Error: {str(e)}")
 
 
 @router.put("/{agent_id}", response_model=AgentOut)
@@ -166,8 +170,11 @@ async def update_agent(
         if not resp.get("success"):
             raise HTTPException(status_code=400, detail=resp.get("message"))
         return resp["data"]
+    except HTTPException:
+        raise
     except Exception as e:
-        raise HTTPException(status_code=503, detail=str(e))
+        print(f"ERROR update_agent: {e}")
+        raise HTTPException(status_code=503, detail=f"Proxy Error: {str(e)}")
 
 
 # API Key Proxy Implementation (Reusing similar logic)
@@ -201,6 +208,8 @@ async def create_agent_api_key(
         data["id"] = data.pop("api_key_id", None) or data.get("id")
         return data
         
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=503, detail=str(e))
 
@@ -221,7 +230,7 @@ async def read_agent_api_keys(
     tenant_id = agent_resp["data"]["tenant_id"]
     
     try:
-        resp = await maim_config_client.get_api_keys(tenant_id, agent_id)
+        resp = await maim_config_client.list_api_keys(tenant_id, agent_id)
         if not resp.get("success"):
             return []
             

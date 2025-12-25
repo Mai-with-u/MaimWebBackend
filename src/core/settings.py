@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
     
     # MaimConfig Service
-    MAIMCONFIG_API_URL: str = "http://localhost:8000/api/v2"
+    MAIMCONFIG_API_URL: str = "http://127.0.0.1:8000/api/v2"
     
     # 秘钥配置
     SECRET_KEY: str = "CHANGE_THIS_TO_A_SECURE_SECRET_KEY_IN_PRODUCTION"

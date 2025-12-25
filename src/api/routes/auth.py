@@ -103,7 +103,8 @@ async def register(
             "tenant_name": tenant_name,
             "tenant_type": TenantType.PERSONAL.value,
             "description": description,
-            "contact_email": user_in.email
+            "contact_email": user_in.email,
+            "owner_id": user_id  # Pass owner_id so MaimConfig handles the relationship
         })
         
         if not resp.get("success"):
@@ -111,25 +112,28 @@ async def register(
             
         real_tenant_id = resp["data"]["id"]
         
+        # Sync: Also save Tenant in local DB so we can query it
+        local_tenant = Tenant(
+            id=real_tenant_id,
+            tenant_name=tenant_name,
+            owner_id=user_id,
+            tenant_type=TenantType.PERSONAL.value,
+            status=TenantStatus.ACTIVE.value,
+            created_at=now,
+            updated_at=now
+        )
+        db.add(local_tenant)
+        
     except Exception as e:
+        import traceback
+        traceback.print_exc()
+        print(f"DEBUG AUTH REGISTER ERROR: {e}")
         # If remote creation fails, we must rollback user creation?
         # Since we haven't committed yet, raising exception here will rollback the transaction (if db session context manages it).
         # But db.add(user) was called. We should catch and re-raise.
         raise HTTPException(status_code=503, detail=f"MaimConfig service unavailable or error: {str(e)}")
 
-    # Create local mapping
-    tenant = Tenant(
-        id=real_tenant_id,  # Use the ID from MaimConfig
-        tenant_name=tenant_name,
-        tenant_type=TenantType.PERSONAL.value,
-        status=TenantStatus.ACTIVE.value,
-        owner_id=user_id,
-        description=description,
-        created_at=now,
-        updated_at=now
-    )
-    db.add(tenant)
-    
+    # Commit both User and Tenant
     await db.commit()
     await db.refresh(user)
     
